@@ -17,9 +17,16 @@ Thumbs.db
 
 # Editores
 .idea/
-.vscode/*
-!.vscode/extensions.json
+.vscode/
+**/.vscode/
 
 # Herramientas de asistente
 .claude/
 **/memory/
+
+# Documentos / ofimática (no forman parte del código)
+*.docx
+*.doc
+*.pdf
+*.pptx
+~$*
