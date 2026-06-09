@@ -55,15 +55,18 @@ export class MedicosService {
     return of(this.especialidadesData.map(e => ({ ...e }))).pipe(delay(300));
   }
 
-  crearEspecialidad(nombre: string): Observable<Especialidad> {
-    const nueva: Especialidad = { id: ++this.seqEsp, nombre, numMedicos: 0 };
+  crearEspecialidad(datos: Pick<Especialidad, 'nombre' | 'descripcion' | 'estado'>): Observable<Especialidad> {
+    const nueva: Especialidad = {
+      id: ++this.seqEsp, nombre: datos.nombre, descripcion: datos.descripcion,
+      estado: datos.estado ?? 'Activa', numMedicos: 0,
+    };
     this.especialidadesData.push(nueva);
     return of(nueva).pipe(delay(LATENCIA));
   }
 
-  actualizarEspecialidad(id: number, nombre: string): Observable<Especialidad> {
+  actualizarEspecialidad(id: number, cambios: Partial<Especialidad>): Observable<Especialidad> {
     const i = this.especialidadesData.findIndex(e => e.id === id);
-    this.especialidadesData[i] = { ...this.especialidadesData[i], nombre };
+    this.especialidadesData[i] = { ...this.especialidadesData[i], ...cambios };
     return of(this.especialidadesData[i]).pipe(delay(LATENCIA));
   }
 

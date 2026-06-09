@@ -83,19 +83,28 @@ export class MedicosListComponent implements OnInit {
   readonly espModal = signal(false);
   readonly espEditando = signal<Especialidad | null>(null);
   readonly espGuardando = signal(false);
-  nombreEsp = '';
+  espForm = { nombre: '', descripcion: '', estado: 'Activa' as 'Activa' | 'Inactiva' };
 
-  nuevaEspecialidad(): void { this.espEditando.set(null); this.nombreEsp = ''; this.espModal.set(true); }
-  editarEspecialidad(e: Especialidad): void { this.espEditando.set(e); this.nombreEsp = e.nombre; this.espModal.set(true); }
+  nuevaEspecialidad(): void {
+    this.espEditando.set(null);
+    this.espForm = { nombre: '', descripcion: '', estado: 'Activa' };
+    this.espModal.set(true);
+  }
+  editarEspecialidad(e: Especialidad): void {
+    this.espEditando.set(e);
+    this.espForm = { nombre: e.nombre, descripcion: e.descripcion ?? '', estado: e.estado ?? 'Activa' };
+    this.espModal.set(true);
+  }
 
   guardarEspecialidad(): void {
-    const nombre = this.nombreEsp.trim();
+    const nombre = this.espForm.nombre.trim();
     if (!nombre) return;
     this.espGuardando.set(true);
     const editando = this.espEditando();
+    const datos = { nombre, descripcion: this.espForm.descripcion.trim(), estado: this.espForm.estado };
     const obs = editando
-      ? this.srv.actualizarEspecialidad(editando.id, nombre)
-      : this.srv.crearEspecialidad(nombre);
+      ? this.srv.actualizarEspecialidad(editando.id, datos)
+      : this.srv.crearEspecialidad(datos);
     obs.subscribe(() => {
       this.espGuardando.set(false);
       this.espModal.set(false);

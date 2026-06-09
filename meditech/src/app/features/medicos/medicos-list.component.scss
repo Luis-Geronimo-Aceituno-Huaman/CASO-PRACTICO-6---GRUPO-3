@@ -15,8 +15,8 @@
 }
 .esp-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  gap: 12px;
   background: #fff;
   border: 1px solid $border-color;
   border-radius: 12px;
@@ -25,8 +25,9 @@
   transition: box-shadow 150ms ease;
   &:hover { box-shadow: $shadow-card-hover; }
 
+  .esp-top { display: flex; align-items: center; gap: 14px; }
   .esp-ico {
-    width: 42px; height: 42px;
+    width: 42px; height: 42px; flex-shrink: 0;
     border-radius: 10px;
     background: rgba(26,111,187,0.1);
     display: flex; align-items: center; justify-content: center;
@@ -35,4 +36,6 @@
   .esp-info { display: flex; flex-direction: column; flex: 1; }
   .esp-nombre { font-weight: 600; font-size: 14px; color: $text-main; }
   .esp-num { font-size: 12px; color: $text-secondary; }
+  .esp-desc { font-size: 13px; color: $text-secondary; line-height: 1.5; margin: 0; }
+  .chip { align-self: flex-start; }
 }

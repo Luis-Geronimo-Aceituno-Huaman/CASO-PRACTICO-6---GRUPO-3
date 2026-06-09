@@ -64,12 +64,16 @@
     <div class="esp-grid">
       @for (e of especialidades(); track e.id) {
         <div class="esp-card">
-          <div class="esp-ico">🏥</div>
-          <div class="esp-info">
-            <span class="esp-nombre">{{ e.nombre }}</span>
-            <span class="esp-num">{{ e.numMedicos }} médico(s)</span>
+          <div class="esp-top">
+            <div class="esp-ico">🏥</div>
+            <div class="esp-info">
+              <span class="esp-nombre">{{ e.nombre }}</span>
+              <span class="esp-num">{{ e.numMedicos }} médico(s)</span>
+            </div>
+            <button class="btn-icon" title="Editar especialidad" (click)="editarEspecialidad(e)">✏️</button>
           </div>
-          <button class="btn-icon" title="Editar especialidad" (click)="editarEspecialidad(e)">✏️</button>
+          @if (e.descripcion) { <p class="esp-desc">{{ e.descripcion }}</p> }
+          <app-estado-chip [estado]="e.estado || 'Activa'" />
         </div>
       }
     </div>
@@ -104,13 +108,25 @@
       <div class="m-body">
         <div class="field">
           <label>Nombre de la especialidad <span class="req">*</span></label>
-          <input class="input" [(ngModel)]="nombreEsp" placeholder="Ej: Oftalmología"
+          <input class="input" [(ngModel)]="espForm.nombre" placeholder="Ej: Oftalmología"
                  (keyup.enter)="guardarEspecialidad()" autofocus>
+        </div>
+        <div class="field">
+          <label>Descripción</label>
+          <textarea class="textarea" [(ngModel)]="espForm.descripcion"
+                    placeholder="Breve descripción de la especialidad…"></textarea>
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select class="select" [(ngModel)]="espForm.estado">
+            <option value="Activa">Activa</option>
+            <option value="Inactiva">Inactiva</option>
+          </select>
         </div>
       </div>
       <div class="m-foot">
         <button class="btn btn-secondary" (click)="espModal.set(false)">Cancelar</button>
-        <button class="btn btn-primary" (click)="guardarEspecialidad()" [disabled]="espGuardando() || !nombreEsp.trim()">
+        <button class="btn btn-primary" (click)="guardarEspecialidad()" [disabled]="espGuardando() || !espForm.nombre.trim()">
           @if (espGuardando()) { <span class="spinner"></span> Guardando… }
           @else { {{ espEditando() ? 'Guardar cambios' : 'Registrar' }} }
         </button>

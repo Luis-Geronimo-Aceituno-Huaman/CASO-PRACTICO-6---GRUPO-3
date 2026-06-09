@@ -12,6 +12,7 @@ export class EstadoChipComponent {
   get clase(): string {
     switch (this.estado) {
       case 'Activo':
+      case 'Activa':
       case 'Atendida':
       case 'Disponible':
         return this.estado === 'Atendida' ? 'chip-info' : 'chip-success';
@@ -19,6 +20,7 @@ export class EstadoChipComponent {
         return 'chip-warning';
       case 'Cancelada':
       case 'Inactivo':
+      case 'Inactiva':
         return 'chip-error';
       default:
         return 'chip-info';

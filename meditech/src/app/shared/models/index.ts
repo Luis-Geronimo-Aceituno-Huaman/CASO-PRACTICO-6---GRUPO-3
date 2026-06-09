@@ -55,6 +55,8 @@ export interface EntradaHistorial {
 export interface Especialidad {
   id: number;
   nombre: string;
+  descripcion?: string;
+  estado?: 'Activa' | 'Inactiva';
   numMedicos: number;
 }
 

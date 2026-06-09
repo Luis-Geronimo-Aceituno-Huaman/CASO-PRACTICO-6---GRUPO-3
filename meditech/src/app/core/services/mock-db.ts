@@ -8,13 +8,13 @@ import {
 } from '../../shared/models';
 
 export const ESPECIALIDADES: Especialidad[] = [
-  { id: 1, nombre: 'Cardiología', numMedicos: 3 },
-  { id: 2, nombre: 'Pediatría', numMedicos: 2 },
-  { id: 3, nombre: 'Dermatología', numMedicos: 2 },
-  { id: 4, nombre: 'Traumatología', numMedicos: 2 },
-  { id: 5, nombre: 'Ginecología', numMedicos: 1 },
-  { id: 6, nombre: 'Neurología', numMedicos: 1 },
-  { id: 7, nombre: 'Medicina General', numMedicos: 1 },
+  { id: 1, nombre: 'Cardiología', descripcion: 'Diagnóstico y tratamiento de enfermedades del corazón y sistema circulatorio.', estado: 'Activa', numMedicos: 3 },
+  { id: 2, nombre: 'Pediatría', descripcion: 'Atención médica integral de niños y adolescentes.', estado: 'Activa', numMedicos: 2 },
+  { id: 3, nombre: 'Dermatología', descripcion: 'Tratamiento de afecciones de la piel, cabello y uñas.', estado: 'Activa', numMedicos: 2 },
+  { id: 4, nombre: 'Traumatología', descripcion: 'Lesiones del sistema musculoesquelético y fracturas.', estado: 'Activa', numMedicos: 2 },
+  { id: 5, nombre: 'Ginecología', descripcion: 'Salud del sistema reproductor femenino.', estado: 'Activa', numMedicos: 1 },
+  { id: 6, nombre: 'Neurología', descripcion: 'Trastornos del sistema nervioso central y periférico.', estado: 'Activa', numMedicos: 1 },
+  { id: 7, nombre: 'Medicina General', descripcion: 'Atención primaria y orientación médica general.', estado: 'Activa', numMedicos: 1 },
 ];
 
 export const PACIENTES: Paciente[] = [
