@@ -1,0 +1,35 @@
+@use 'variables' as *;
+
+// Tarjeta base reutilizable
+@mixin card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+// Texto truncado con elipsis
+@mixin ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Scroll fino y discreto
+@mixin thin-scroll {
+  &::-webkit-scrollbar { width: 8px; height: 8px; }
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+@mixin tablet {
+  @media (max-width: $bp-tablet) { @content; }
+}
+
+@mixin mobile {
+  @media (max-width: $bp-mobile) { @content; }
+}

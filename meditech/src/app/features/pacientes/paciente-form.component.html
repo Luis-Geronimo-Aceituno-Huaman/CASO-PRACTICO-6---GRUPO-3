@@ -1,0 +1,86 @@
+<div class="modal-overlay" (click)="cerrar.emit()">
+  <div class="modal-card ancho" (click)="$event.stopPropagation()">
+    <div class="m-head">
+      <h3>{{ paciente ? '✏️ Editar Paciente' : '➕ Nuevo Paciente' }}</h3>
+      <button class="btn-icon" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div class="m-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombre <span class="req">*</span></label>
+            <input class="input" formControlName="nombre" placeholder="Juan"
+                   [class.invalid]="invalido('nombre')">
+            @if (invalido('nombre')) { <span class="field-error">Nombre requerido (mín. 2 caracteres).</span> }
+          </div>
+          <div class="field">
+            <label>Apellido <span class="req">*</span></label>
+            <input class="input" formControlName="apellido" placeholder="Pérez Ramos"
+                   [class.invalid]="invalido('apellido')">
+            @if (invalido('apellido')) { <span class="field-error">Apellido requerido.</span> }
+          </div>
+
+          <div class="field">
+            <label>DNI <span class="req">*</span></label>
+            <input class="input mono" formControlName="dni" placeholder="45872103" maxlength="8"
+                   [class.invalid]="invalido('dni')">
+            @if (form.get('dni')?.touched && form.get('dni')?.errors?.['required']) {
+              <span class="field-error">DNI requerido.</span>
+            } @else if (form.get('dni')?.touched && form.get('dni')?.errors?.['pattern']) {
+              <span class="field-error">El DNI debe tener 8 dígitos.</span>
+            } @else if (form.get('dni')?.errors?.['dniDuplicado']) {
+              <span class="field-error">Este DNI ya está registrado.</span>
+            } @else if (form.get('dni')?.pending) {
+              <span class="field-error" style="color:#6B7A8D">Verificando DNI…</span>
+            }
+          </div>
+          <div class="field">
+            <label>Fecha de nacimiento <span class="req">*</span></label>
+            <input type="date" class="input" formControlName="fechaNacimiento"
+                   [class.invalid]="invalido('fechaNacimiento')">
+            @if (invalido('fechaNacimiento')) { <span class="field-error">Fecha requerida.</span> }
+          </div>
+
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input class="input" formControlName="telefono" placeholder="987654321" maxlength="9"
+                   [class.invalid]="invalido('telefono')">
+            @if (invalido('telefono')) { <span class="field-error">Teléfono de 9 dígitos.</span> }
+          </div>
+          <div class="field">
+            <label>Correo</label>
+            <input class="input" formControlName="correo" placeholder="correo@mail.com"
+                   [class.invalid]="invalido('correo')">
+            @if (invalido('correo')) { <span class="field-error">Correo no válido.</span> }
+          </div>
+
+          <div class="field">
+            <label>Dirección</label>
+            <input class="input" formControlName="direccion" placeholder="Av. Siempre Viva 123">
+          </div>
+          <div class="field">
+            <label>Tipo de sangre</label>
+            <select class="select" formControlName="tipoSangre">
+              @for (t of tiposSangre; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Alergias</label>
+          <textarea class="textarea" formControlName="alergias"
+                    placeholder="Indique alergias conocidas o 'Ninguna'"></textarea>
+        </div>
+      </div>
+
+      <div class="m-foot">
+        <button type="button" class="btn btn-secondary" (click)="cerrar.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+          @if (guardando()) { <span class="spinner"></span> Guardando… }
+          @else { Guardar Paciente }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+<div class="page">
+  <header class="page-head">
+    <div class="page-title">
+      <h1>Dashboard</h1>
+      <span class="page-subtitle">{{ fechaLarga }}</span>
+    </div>
+    <button class="btn btn-primary" (click)="actualizar()">
+      <span class="icon">⟳</span> Actualizar datos
+    </button>
+  </header>
+
+  <!-- Fila 1: KPIs -->
+  <section class="kpis">
+    <app-kpi-card titulo="Citas hoy" [valor]="48" icono="📅"
+                  tendencia="+8% vs ayer" [tendenciaPositiva]="true"
+                  color="#1A6FBB" [cargando]="cargando()" />
+    <app-kpi-card titulo="Pacientes atendidos" [valor]="'1,284'" icono="👥"
+                  tendencia="+12% vs ayer" [tendenciaPositiva]="true"
+                  color="#27AE60" [cargando]="cargando()" />
+    <app-kpi-card titulo="Médicos disponibles" [valor]="12" icono="🩺"
+                  subtitulo="de 14 activos"
+                  color="#F39C12" [cargando]="cargando()" />
+    <app-kpi-card titulo="Especialidad más pedida" valor="Cardiología" icono="🏥"
+                  subtitulo="38% de las citas"
+                  color="#9B59B6" [cargando]="cargando()" />
+  </section>
+
+  <!-- Fila 2: Gráficos -->
+  <section class="graficos">
+    <div class="card">
+      <div class="card-header"><h3>📈 Citas por día</h3><span class="text-secondary tag">Últimos 7 días</span></div>
+      <div class="card-body chart-box">
+        @if (barras) { <app-chart type="bar" [data]="barras" /> }
+        @else { <div class="skeleton chart-skel"></div> }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>🍩 Especialidades más solicitadas</h3></div>
+      <div class="card-body chart-box">
+        @if (dona) { <app-chart type="doughnut" [data]="dona" /> }
+        @else { <div class="skeleton chart-skel"></div> }
+      </div>
+    </div>
+  </section>
+
+  <!-- Fila 3: Tablas rápidas -->
+  <section class="tablas">
+    <div class="card">
+      <div class="card-header">
+        <h3>🕒 Próximas citas de hoy</h3>
+        <a routerLink="/citas" class="ver-mas">Ver todas →</a>
+      </div>
+      <div class="card-body no-pad">
+        <table class="mini-tabla">
+          <thead><tr><th>Hora</th><th>Paciente</th><th>Médico</th><th>Estado</th></tr></thead>
+          <tbody>
+            @if (cargando()) {
+              @for (i of [1,2,3,4,5]; track i) {
+                <tr><td colspan="4"><div class="skeleton row-skel"></div></td></tr>
+              }
+            } @else {
+              @for (c of proximas(); track c.id) {
+                <tr>
+                  <td class="mono">{{ c.hora }}</td>
+                  <td>{{ c.paciente }}</td>
+                  <td class="text-secondary">{{ c.medico }}</td>
+                  <td><app-estado-chip [estado]="c.estado" /></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="4" class="vacio">No hay citas para hoy.</td></tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🆕 Últimos pacientes registrados</h3>
+        <a routerLink="/pacientes" class="ver-mas">Ver todos →</a>
+      </div>
+      <div class="card-body no-pad">
+        <table class="mini-tabla">
+          <thead><tr><th>Paciente</th><th>DNI</th><th>Registro</th><th>Estado</th></tr></thead>
+          <tbody>
+            @if (cargando()) {
+              @for (i of [1,2,3,4,5]; track i) {
+                <tr><td colspan="4"><div class="skeleton row-skel"></div></td></tr>
+              }
+            } @else {
+              @for (p of recientes(); track p.id) {
+                <tr>
+                  <td>{{ p.nombre }} {{ p.apellido }}</td>
+                  <td class="mono">{{ p.dni }}</td>
+                  <td class="text-secondary">{{ p.fechaRegistro }}</td>
+                  <td><app-estado-chip [estado]="p.estado" /></td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

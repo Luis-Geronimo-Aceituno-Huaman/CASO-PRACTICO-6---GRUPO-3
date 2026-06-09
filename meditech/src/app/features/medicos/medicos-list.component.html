@@ -1,0 +1,92 @@
+<div class="page">
+  <header class="page-head">
+    <div class="page-title">
+      <h1>🩺 Médicos</h1>
+      <span class="page-subtitle">Gestión de médicos, especialidades y horarios</span>
+    </div>
+    <div class="toolbar">
+      <select class="select filtro" [(ngModel)]="filtroEsp" (ngModelChange)="onFiltro()">
+        <option [value]="0">Todas las especialidades</option>
+        @for (e of especialidades(); track e.id) { <option [value]="e.id">{{ e.nombre }}</option> }
+      </select>
+      <button class="btn btn-primary" (click)="nuevo()"><span class="icon">＋</span> Nuevo Médico</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="tabla-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Nombre</th><th>Especialidad</th><th>Teléfono</th><th>Turno</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            @for (i of [1,2,3,4,5,6]; track i) { <tr><td colspan="7"><div class="skeleton row-skel"></div></td></tr> }
+          } @else {
+            @for (m of medicos(); track m.id) {
+              <tr>
+                <td class="mono">{{ m.id.toString().padStart(3, '0') }}</td>
+                <td><strong>Dr. {{ m.nombre }} {{ m.apellido }}</strong><br><span class="mono cmp">{{ m.cmp }}</span></td>
+                <td>{{ m.especialidad }}</td>
+                <td>{{ m.telefono }}</td>
+                <td>{{ m.turno }}</td>
+                <td><app-estado-chip [estado]="m.estado" /></td>
+                <td>
+                  <div class="acciones">
+                    <button class="btn-icon" title="Ver horarios" (click)="verHorarios(m)">📅</button>
+                    <button class="btn-icon" title="Editar" (click)="editar(m)">✏️</button>
+                    <button class="btn-icon" title="Eliminar" (click)="pedirEliminar(m)">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            } @empty { <tr><td colspan="7" class="vacio">No se encontraron médicos.</td></tr> }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="paginacion">
+      <span>{{ total() }} médico(s) · página {{ pagina() }} de {{ totalPaginas }}</span>
+      <div class="pags">
+        <button class="pag" (click)="irPagina(pagina() - 1)" [disabled]="pagina() === 1">‹</button>
+        @for (p of paginas; track p) { <button class="pag" [class.activo]="p === pagina()" (click)="irPagina(p)">{{ p }}</button> }
+        <button class="pag" (click)="irPagina(pagina() + 1)" [disabled]="pagina() === totalPaginas">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección secundaria: Especialidades registradas -->
+  <section class="esp-section">
+    <h2>Especialidades registradas</h2>
+    <div class="esp-grid">
+      @for (e of especialidades(); track e.id) {
+        <div class="esp-card">
+          <div class="esp-ico">🏥</div>
+          <div class="esp-info">
+            <span class="esp-nombre">{{ e.nombre }}</span>
+            <span class="esp-num">{{ e.numMedicos }} médico(s)</span>
+          </div>
+          <button class="btn-icon" title="Editar especialidad"
+                  (click)="toast.info('Edición de especialidad (demo).')">✏️</button>
+        </div>
+      }
+    </div>
+  </section>
+</div>
+
+@if (formAbierto()) {
+  <app-medico-form [medico]="editando()" [especialidades]="especialidades()"
+                   (guardado)="onGuardado()" (cerrar)="formAbierto.set(false)" />
+}
+
+@if (aEliminar(); as m) {
+  <app-confirm-modal
+    titulo="Eliminar médico"
+    [mensaje]="'¿Seguro que deseas eliminar a Dr. ' + m.nombre + ' ' + m.apellido + '?'"
+    textoConfirmar="Eliminar" [peligro]="true" [procesando]="eliminando()"
+    (confirmar)="confirmarEliminar()" (cancelar)="aEliminar.set(null)" />
+}
+
+@if (horariosDe(); as m) {
+  <app-horarios-modal [medico]="m" (cerrar)="horariosDe.set(null)" />
+}

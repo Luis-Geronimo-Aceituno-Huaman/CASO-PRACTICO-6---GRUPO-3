@@ -1,0 +1,359 @@
+// ============================================================
+//  Meditech Salud Digital — Estilos globales
+// ============================================================
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: $font-base;
+  font-size: 14px;
+  line-height: 1.6;
+  color: $text-main;
+  background: $bg-general;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+// Scrollbar global discreto
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: $border-color; border-radius: 5px; }
+*::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+h1, h2, h3, h4 {
+  margin: 0;
+  letter-spacing: -0.3px;
+  color: $text-main;
+}
+h1 { font-size: 28px; font-weight: 700; }
+h2 { font-size: 20px; font-weight: 600; }
+h3 { font-size: 16px; font-weight: 600; }
+
+p { margin: 0; }
+a { color: $color-primary; text-decoration: none; }
+
+code, .mono {
+  font-family: $font-mono;
+  font-size: 13px;
+}
+
+// ---------- Botones reutilizables ----------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: $font-base;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: $radius-sm;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  user-select: none;
+
+  &:active { transform: scale(0.98); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .icon { font-size: 16px; line-height: 1; }
+}
+
+.btn-primary {
+  background: $color-primary;
+  color: #fff;
+  &:hover:not(:disabled) {
+    background: $color-primary-hover;
+    box-shadow: 0 4px 12px rgba(26, 111, 187, 0.25);
+  }
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: $border-color;
+  color: $text-secondary;
+  &:hover:not(:disabled) { background: $bg-general; }
+}
+
+.btn-danger {
+  background: $color-error;
+  color: #fff;
+  &:hover:not(:disabled) { background: $color-error-hover; }
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: $text-secondary;
+  border-radius: $radius-sm;
+  padding: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 120ms ease;
+  &:hover:not(:disabled) { background: $bg-general; color: $text-main; }
+}
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+// ---------- Chips de estado ----------
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.chip-success { background: $chip-success-bg; color: $color-success; }
+.chip-error   { background: $chip-error-bg;   color: $color-error; }
+.chip-warning { background: $chip-warning-bg; color: $color-warning; }
+.chip-info    { background: $chip-info-bg;    color: $color-primary; }
+
+// ---------- Formularios ----------
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field label {
+  font-weight: 500;
+  font-size: 13px;
+  color: $text-main;
+  .req { color: $color-error; margin-left: 2px; }
+}
+.input, .select, .textarea {
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid $border-color;
+  border-radius: $radius-md;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: $font-base;
+  color: $text-main;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  &::placeholder { color: $text-secondary; opacity: 0.8; }
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: $shadow-focus;
+  }
+  &:disabled { background: $bg-general; cursor: not-allowed; }
+  &.invalid { border-color: $color-error; }
+}
+.textarea { resize: vertical; min-height: 80px; }
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7A8D' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+.field-error { color: $color-error; font-size: 12px; margin-top: 2px; }
+
+// ---------- Cards ----------
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid $border-color;
+  h3 { font-size: 16px; font-weight: 600; }
+}
+.card-body { padding: 20px; }
+
+// ---------- Utilidades ----------
+.page-title { display: flex; flex-direction: column; gap: 4px; }
+.page-subtitle { color: $text-secondary; font-size: 14px; }
+.text-secondary { color: $text-secondary; }
+.spacer { flex: 1; }
+.row { display: flex; align-items: center; gap: 12px; }
+
+// ---------- Animaciones globales ----------
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #eef1f5 25%, #f7f9fc 50%, #eef1f5 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// ---------- Encabezado de página ----------
+.page { display: flex; flex-direction: column; gap: 24px; max-width: 1400px; }
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+// ---------- Toolbar de sección (acciones + buscador) ----------
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.search {
+  position: relative;
+  .search-input {
+    width: 260px;
+    background: #fff;
+    border: 1.5px solid $border-color;
+    border-radius: $radius-md;
+    padding: 9px 14px 9px 36px;
+    font-size: 14px;
+    font-family: $font-base;
+    color: $text-main;
+    &:focus { outline: none; border-color: $color-primary; box-shadow: $shadow-focus; }
+  }
+  .search-ico {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); color: $text-secondary; font-size: 14px;
+  }
+}
+
+// ---------- Tabla de datos reutilizable ----------
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  thead th {
+    background: $bg-table-head;
+    color: $text-secondary;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid $bg-general;
+    color: $text-main;
+    vertical-align: middle;
+  }
+  tbody tr { transition: background 100ms ease; }
+  tbody tr:nth-child(even) { background: $bg-row-alt; }
+  tbody tr:hover { background: $bg-row-hover; }
+  .acciones { display: flex; gap: 4px; white-space: nowrap; }
+  .vacio { text-align: center; color: $text-secondary; padding: 40px; }
+}
+.tabla-scroll { overflow-x: auto; }
+.row-skel { height: 16px; width: 100%; }
+
+// ---------- Paginación ----------
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid $border-color;
+  font-size: 13px;
+  color: $text-secondary;
+  flex-wrap: wrap;
+  gap: 12px;
+  .pags { display: flex; gap: 6px; }
+  .pag {
+    min-width: 32px; height: 32px;
+    border: 1px solid $border-color;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: $text-main;
+    &:hover:not(:disabled) { background: $bg-general; }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &.activo { background: $color-primary; color: #fff; border-color: $color-primary; }
+  }
+}
+
+// ---------- Modal de formulario reutilizable ----------
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1400;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: ovFade 200ms ease;
+}
+@keyframes ovFade { from { opacity: 0; } to { opacity: 1; } }
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(13,27,42,0.35);
+  animation: modalUp 200ms ease-out;
+  &.ancho { max-width: 760px; }
+}
+@keyframes modalUp { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: none; } }
+.modal-card .m-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid $border-color;
+  h3 { font-size: 17px; }
+}
+.modal-card .m-body { padding: 24px; overflow-y: auto; }
+.modal-card .m-foot {
+  display: flex; justify-content: flex-end; gap: 12px;
+  padding: 16px 24px; border-top: 1px solid $border-color;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+@media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+// ---------- Drawer lateral ----------
+.drawer-overlay {
+  position: fixed; inset: 0; z-index: 1300;
+  background: rgba(0,0,0,0.4);
+  animation: ovFade 200ms ease;
+}
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 480px; max-width: 92vw;
+  background: #fff;
+  z-index: 1301;
+  display: flex; flex-direction: column;
+  box-shadow: -8px 0 40px rgba(13,27,42,0.2);
+  animation: drawerIn 300ms ease-out;
+}
+@keyframes drawerIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.drawer .d-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid $border-color;
+}
+.drawer .d-body { padding: 24px; overflow-y: auto; flex: 1; }

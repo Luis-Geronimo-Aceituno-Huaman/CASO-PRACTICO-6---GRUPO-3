@@ -1,0 +1,32 @@
+<aside class="sidebar" [class.colapsado]="layout.colapsado()" [class.movil-abierto]="layout.movilAbierto()">
+  <div class="logo">
+    <span class="logo-cruz">✚</span>
+    @if (!layout.colapsado()) {
+      <div class="logo-text">
+        <span class="marca">Meditech</span>
+        <span class="sub">Salud Digital</span>
+      </div>
+    }
+  </div>
+
+  <nav class="nav">
+    @for (item of items; track item.ruta) {
+      <a class="nav-item"
+         [routerLink]="item.ruta"
+         routerLinkActive="activo"
+         (click)="layout.cerrarMovil()"
+         [attr.aria-label]="item.texto"
+         [attr.title]="layout.colapsado() ? item.texto : null">
+        <span class="ind"></span>
+        <span class="ico">{{ item.icono }}</span>
+        @if (!layout.colapsado()) { <span class="txt">{{ item.texto }}</span> }
+        @if (layout.colapsado()) { <span class="tooltip">{{ item.texto }}</span> }
+      </a>
+    }
+  </nav>
+
+  <button class="toggle" (click)="layout.toggleColapso()"
+          [attr.aria-label]="layout.colapsado() ? 'Expandir menú' : 'Colapsar menú'">
+    {{ layout.colapsado() ? '»' : '«' }}
+  </button>
+</aside>

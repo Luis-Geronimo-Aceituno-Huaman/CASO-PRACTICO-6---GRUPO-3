@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+/tmp/
+/out-tsc/
+/bazel-out/
+
+# Angular cache
+.angular/
+
+# Entorno / sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Editores
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Herramientas de asistente
+.claude/
+**/memory/

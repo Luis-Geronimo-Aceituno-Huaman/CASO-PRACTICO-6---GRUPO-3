@@ -1,0 +1,71 @@
+<div class="modal-overlay" (click)="cerrar.emit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="m-head">
+      <h3>{{ medico ? '✏️ Editar Médico' : '➕ Nuevo Médico' }}</h3>
+      <button class="btn-icon" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div class="m-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombre <span class="req">*</span></label>
+            <input class="input" formControlName="nombre" placeholder="Roberto"
+                   [class.invalid]="invalido('nombre')">
+            @if (invalido('nombre')) { <span class="field-error">Nombre requerido.</span> }
+          </div>
+          <div class="field">
+            <label>Apellido <span class="req">*</span></label>
+            <input class="input" formControlName="apellido" placeholder="Linares Poma"
+                   [class.invalid]="invalido('apellido')">
+            @if (invalido('apellido')) { <span class="field-error">Apellido requerido.</span> }
+          </div>
+
+          <div class="field">
+            <label>CMP (Colegio Médico) <span class="req">*</span></label>
+            <input class="input mono" formControlName="cmp" placeholder="CMP-28471"
+                   [class.invalid]="invalido('cmp')">
+            @if (invalido('cmp')) { <span class="field-error">Formato: CMP-#####.</span> }
+          </div>
+          <div class="field">
+            <label>Especialidad <span class="req">*</span></label>
+            <select class="select" formControlName="especialidadId"
+                    [class.invalid]="invalido('especialidadId')">
+              <option [value]="0" disabled>Seleccione…</option>
+              @for (e of especialidades; track e.id) { <option [value]="e.id">{{ e.nombre }}</option> }
+            </select>
+            @if (invalido('especialidadId')) { <span class="field-error">Seleccione una especialidad.</span> }
+          </div>
+
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input class="input" formControlName="telefono" placeholder="987111222" maxlength="9"
+                   [class.invalid]="invalido('telefono')">
+            @if (invalido('telefono')) { <span class="field-error">Teléfono de 9 dígitos.</span> }
+          </div>
+          <div class="field">
+            <label>Correo <span class="req">*</span></label>
+            <input class="input" formControlName="correo" placeholder="medico@meditech.pe"
+                   [class.invalid]="invalido('correo')">
+            @if (invalido('correo')) { <span class="field-error">Correo no válido.</span> }
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Turno <span class="req">*</span></label>
+          <select class="select" formControlName="turno">
+            @for (t of turnos; track t) { <option [value]="t">{{ t }}</option> }
+          </select>
+        </div>
+      </div>
+
+      <div class="m-foot">
+        <button type="button" class="btn btn-secondary" (click)="cerrar.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+          @if (guardando()) { <span class="spinner"></span> Guardando… }
+          @else { Guardar Médico }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

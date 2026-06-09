@@ -1,0 +1,74 @@
+<div class="modal-overlay" (click)="cerrar.emit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="m-head">
+      <h3>➕ Nueva Cita</h3>
+      <button class="btn-icon" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div class="m-body">
+        <!-- Autocomplete paciente -->
+        <div class="field autocomplete">
+          <label>Paciente <span class="req">*</span></label>
+          <input class="input" [(ngModel)]="busquedaPac" [ngModelOptions]="{standalone: true}"
+                 (ngModelChange)="buscarPac()" (focus)="buscarPac()"
+                 placeholder="Buscar paciente por nombre o DNI…"
+                 [class.invalid]="!pacienteSel() && form.touched">
+          @if (mostrarSug() && sugerencias().length) {
+            <ul class="sugerencias">
+              @for (p of sugerencias(); track p.id) {
+                <li (click)="elegirPac(p)">
+                  <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+                  <span class="mono">DNI {{ p.dni }}</span>
+                </li>
+              }
+            </ul>
+          }
+          @if (!pacienteSel() && form.touched) { <span class="field-error">Selecciona un paciente.</span> }
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Médico <span class="req">*</span></label>
+            <select class="select" formControlName="idMedico" (change)="onMedico()"
+                    [class.invalid]="invalido('idMedico')">
+              <option [value]="0" disabled>Seleccione…</option>
+              @for (m of medicos(); track m.id) {
+                <option [value]="m.id">Dr. {{ m.nombre }} {{ m.apellido }} — {{ m.especialidad }}</option>
+              }
+            </select>
+            @if (invalido('idMedico')) { <span class="field-error">Seleccione un médico.</span> }
+          </div>
+          <div class="field">
+            <label>Especialidad</label>
+            <input class="input" [value]="especialidad() || '—'" disabled>
+          </div>
+
+          <div class="field">
+            <label>Fecha <span class="req">*</span></label>
+            <input type="date" class="input" formControlName="fecha" [class.invalid]="invalido('fecha')">
+            @if (invalido('fecha')) { <span class="field-error">Fecha requerida.</span> }
+          </div>
+          <div class="field">
+            <label>Hora <span class="req">*</span></label>
+            <input type="time" class="input" formControlName="hora" [class.invalid]="invalido('hora')">
+            @if (invalido('hora')) { <span class="field-error">Hora requerida.</span> }
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Motivo de consulta</label>
+          <textarea class="textarea" formControlName="motivo" placeholder="Describa el motivo de la cita…"></textarea>
+        </div>
+      </div>
+
+      <div class="m-foot">
+        <button type="button" class="btn btn-secondary" (click)="cerrar.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+          @if (guardando()) { <span class="spinner"></span> Guardando… }
+          @else { Registrar Cita }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

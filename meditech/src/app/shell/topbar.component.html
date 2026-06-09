@@ -1,0 +1,64 @@
+<header class="topbar">
+  <button class="hamburguesa btn-icon" (click)="layout.toggleMovil()" aria-label="Abrir menú">☰</button>
+
+  <div class="breadcrumb">
+    @for (c of breadcrumb(); track $index; let last = $last) {
+      <span class="crumb" [class.actual]="last">{{ c }}</span>
+      @if (!last) { <span class="sep">/</span> }
+    }
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="notif-wrap">
+    <button class="btn-icon notif" aria-label="Notificaciones" (click)="toggleNotif()">
+      🔔
+      @if (noLeidas() > 0) { <span class="badge">{{ noLeidas() }}</span> }
+    </button>
+
+    @if (notifAbierto()) {
+      <div class="notif-panel" (click)="$event.stopPropagation()">
+        <div class="np-head">
+          <span class="np-title">Notificaciones</span>
+          @if (noLeidas() > 0) {
+            <button class="np-marcar" (click)="marcarTodas()">Marcar todas como leídas</button>
+          }
+        </div>
+        <div class="np-list">
+          @for (n of notificaciones(); track n.id) {
+            <div class="np-item" [class.no-leida]="!n.leida">
+              <span class="np-ico">{{ n.ico }}</span>
+              <div class="np-info">
+                <span class="np-t">{{ n.titulo }}</span>
+                <span class="np-d">{{ n.detalle }}</span>
+                <span class="np-time">{{ n.tiempo }}</span>
+              </div>
+              @if (!n.leida) { <span class="np-dot"></span> }
+            </div>
+          }
+        </div>
+        <a routerLink="/citas" class="np-foot" (click)="notifAbierto.set(false)">Ver todas las citas →</a>
+      </div>
+    }
+  </div>
+
+  <div class="user" (click)="toggleMenu()">
+    <div class="avatar">{{ (auth.usuario()?.nombre || 'A').charAt(0) }}</div>
+    <div class="user-info">
+      <span class="user-name">{{ auth.usuario()?.nombre || 'Administrador' }}</span>
+      <span class="user-rol">{{ auth.usuario()?.rol === 'admin' ? 'Administrador' : 'Médico' }}</span>
+    </div>
+    <span class="chev">▾</span>
+
+    @if (menuAbierto()) {
+      <div class="menu" (click)="$event.stopPropagation()">
+        <button class="menu-item">👤 Ver perfil</button>
+        <button class="menu-item" (click)="cerrarSesion()">🚪 Cerrar sesión</button>
+      </div>
+    }
+  </div>
+</header>
+
+@if (menuAbierto() || notifAbierto()) {
+  <div class="menu-backdrop" (click)="menuAbierto.set(false); notifAbierto.set(false)"></div>
+}

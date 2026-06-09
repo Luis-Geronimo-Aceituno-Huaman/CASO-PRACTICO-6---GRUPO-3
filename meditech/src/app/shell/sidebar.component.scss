@@ -1,0 +1,120 @@
+@use '../../styles/variables' as *;
+
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: $sidebar-width;
+  background: $sidebar-bg;
+  color: $sidebar-text;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: width 200ms ease, transform 200ms ease;
+
+  &.colapsado { width: $sidebar-width-collapsed; }
+}
+
+.logo {
+  height: $topbar-height;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  .logo-cruz {
+    color: $color-secondary;
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .marca { font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+  .sub { font-size: 11px; color: rgba(232,237,242,0.55); }
+}
+.colapsado .logo { justify-content: center; padding: 0; }
+
+.nav {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  color: rgba(232,237,242,0.82);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+
+  .ind {
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px; height: 22px;
+    background: $color-primary;
+    border-radius: 0 3px 3px 0;
+    transition: transform 150ms ease;
+  }
+  .ico { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+
+  &:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    .ind { transform: translateY(-50%) scaleY(0.6); background: rgba(26,111,187,0.5); }
+  }
+
+  &.activo {
+    background: rgba(26,111,187,0.15);
+    color: #fff;
+    .ind { transform: translateY(-50%) scaleY(1); background: $color-primary; }
+  }
+}
+.colapsado .nav-item { justify-content: center; padding: 11px 0; }
+
+// Tooltip al colapsar
+.tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  background: $text-main;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-6px);
+  transition: all 150ms ease;
+  z-index: 200;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.colapsado .nav-item:hover .tooltip { opacity: 1; transform: translateX(0); }
+
+.toggle {
+  margin: 12px;
+  height: 36px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: $sidebar-text;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 120ms ease;
+  &:hover { background: rgba(255,255,255,0.12); }
+}
+
+@media (max-width: $bp-tablet) {
+  .sidebar { transform: translateX(-100%); width: $sidebar-width; }
+  .sidebar.movil-abierto { transform: translateX(0); box-shadow: 8px 0 32px rgba(0,0,0,0.3); }
+}

@@ -1,0 +1,80 @@
+<div class="page">
+  <header class="page-head">
+    <div class="page-title">
+      <h1>📊 Reportes</h1>
+      <span class="page-subtitle">Análisis y estadísticas de la actividad clínica</span>
+    </div>
+    <div class="toolbar filtros-rep">
+      <div class="rango">
+        <label>Del</label>
+        <input type="date" class="input" [(ngModel)]="desde" (ngModelChange)="cargar()">
+        <label>al</label>
+        <input type="date" class="input" [(ngModel)]="hasta" (ngModelChange)="cargar()">
+      </div>
+      <select class="select" [(ngModel)]="filtroEsp">
+        <option [value]="0">Todas las especialidades</option>
+        @for (e of especialidades(); track e.id) { <option [value]="e.id">{{ e.nombre }}</option> }
+      </select>
+      <button class="btn btn-primary" (click)="exportarPDF()"><span class="icon">⬇</span> Exportar PDF</button>
+    </div>
+  </header>
+
+  <!-- Fila 1: gráfico principal -->
+  <div class="card">
+    <div class="card-header"><h3>📈 Evolución de citas por semana</h3></div>
+    <div class="card-body chart-main">
+      @if (linea) { <app-chart type="line" [data]="linea" /> }
+      @else { <div class="skeleton" style="width:100%;height:100%"></div> }
+    </div>
+  </div>
+
+  <!-- Fila 2: dos gráficos -->
+  <div class="grid-graficos">
+    <div class="card">
+      <div class="card-header"><h3>Distribución por especialidad</h3></div>
+      <div class="card-body chart-med">
+        @if (barrasEsp) { <app-chart type="bar" [data]="barrasEsp" [options]="opcHorizontal" /> }
+        @else { <div class="skeleton" style="width:100%;height:100%"></div> }
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Médicos con más citas atendidas</h3></div>
+      <div class="card-body chart-med">
+        @if (barrasMed) { <app-chart type="bar" [data]="barrasMed" [options]="opcHorizontal" /> }
+        @else { <div class="skeleton" style="width:100%;height:100%"></div> }
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila 3: tabla resumen exportable -->
+  <div class="card">
+    <div class="card-header"><h3>📋 Resumen por especialidad</h3></div>
+    <div class="tabla-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Especialidad</th><th>Total citas</th><th>Atendidas</th><th>Canceladas</th><th>% Asistencia</th></tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            @for (i of [1,2,3,4,5]; track i) { <tr><td colspan="5"><div class="skeleton row-skel"></div></td></tr> }
+          } @else {
+            @for (r of resumen(); track r.especialidad) {
+              <tr>
+                <td><strong>{{ r.especialidad }}</strong></td>
+                <td>{{ r.total }}</td>
+                <td>{{ r.atendidas }}</td>
+                <td>{{ r.canceladas }}</td>
+                <td>
+                  <div class="asistencia">
+                    <div class="barra"><div class="rel" [style.width.%]="r.asistencia"></div></div>
+                    <span>{{ r.asistencia }}%</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

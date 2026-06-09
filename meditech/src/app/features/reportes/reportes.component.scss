@@ -1,0 +1,36 @@
+@use '../../../styles/variables' as *;
+
+.filtros-rep { gap: 12px; }
+.rango {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid $border-color;
+  border-radius: 8px; padding: 4px 10px;
+  label { font-size: 13px; color: $text-secondary; }
+  .input { border: none; padding: 6px 4px; width: 140px; &:focus { box-shadow: none; } }
+}
+
+.chart-main { height: 320px; padding: 20px; }
+.grid-graficos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.chart-med { height: 300px; padding: 16px 20px; }
+
+.asistencia {
+  display: flex; align-items: center; gap: 10px;
+  .barra {
+    flex: 1; max-width: 120px; height: 8px;
+    background: $bg-general; border-radius: 4px; overflow: hidden;
+  }
+  .rel { height: 100%; background: $color-secondary; border-radius: 4px; }
+  span { font-weight: 600; font-size: 13px; min-width: 38px; }
+}
+
+@media (max-width: 1024px) {
+  .grid-graficos { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .topbar, .sidebar, .filtros-rep { display: none !important; }
+}

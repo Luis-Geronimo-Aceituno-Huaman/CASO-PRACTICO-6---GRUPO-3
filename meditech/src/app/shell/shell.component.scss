@@ -1,0 +1,33 @@
+@use '../../styles/variables' as *;
+
+.contenido {
+  position: fixed;
+  top: $topbar-height;
+  left: $sidebar-width;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: $content-padding;
+  background: $bg-general;
+  transition: left 200ms ease;
+
+  &::-webkit-scrollbar { width: 10px; }
+  &::-webkit-scrollbar-thumb { background: $border-color; border-radius: 5px; }
+  &::-webkit-scrollbar-thumb:hover { background: $text-secondary; }
+}
+
+.shell.colapsado .contenido { left: $sidebar-width-collapsed; }
+
+.overlay-movil {
+  display: none;
+}
+
+@media (max-width: $bp-tablet) {
+  .contenido { left: 0 !important; }
+  .overlay-movil {
+    display: block;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 95;
+  }
+}

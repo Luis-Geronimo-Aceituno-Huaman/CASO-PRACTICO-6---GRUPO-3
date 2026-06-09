@@ -1,0 +1,63 @@
+@use '../../../styles/variables' as *;
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.graficos {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+}
+
+.tablas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.card-header {
+  justify-content: space-between;
+  .tag { font-size: 12px; }
+  .ver-mas { font-size: 13px; font-weight: 600; }
+}
+
+.chart-box { height: 280px; padding: 16px 20px; }
+.chart-skel { width: 100%; height: 100%; }
+
+.no-pad { padding: 0; }
+
+.mini-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $text-secondary;
+    background: $bg-table-head;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid $bg-general;
+  }
+  tbody tr:hover { background: $bg-row-hover; }
+  tbody tr:last-child td { border-bottom: none; }
+  .vacio { text-align: center; color: $text-secondary; padding: 28px; }
+  .row-skel { height: 14px; }
+}
+
+@media (max-width: 1024px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .graficos, .tablas { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: 1fr; }
+}

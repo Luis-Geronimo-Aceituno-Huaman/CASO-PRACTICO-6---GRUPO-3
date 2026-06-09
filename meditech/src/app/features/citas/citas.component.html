@@ -1,0 +1,179 @@
+<div class="page">
+  <header class="page-head">
+    <div class="page-title">
+      <h1>📅 Citas</h1>
+      <span class="page-subtitle">Gestión y programación de citas médicas</span>
+    </div>
+    <div class="toolbar">
+      <div class="toggle-modo">
+        <button [class.activo]="modo() === 'lista'" (click)="modo.set('lista')">📋 Lista</button>
+        <button [class.activo]="modo() === 'calendario'" (click)="modo.set('calendario')">📅 Calendario</button>
+      </div>
+      <button class="btn btn-primary" (click)="nueva()"><span class="icon">＋</span> Nueva Cita</button>
+    </div>
+  </header>
+
+  <!-- ============ MODO LISTA ============ -->
+  @if (modo() === 'lista') {
+    <div class="filtros card">
+      <div class="filtro-item">
+        <label>Fecha</label>
+        <input type="date" class="input" [(ngModel)]="filtroFecha" (ngModelChange)="cargar()">
+      </div>
+      <div class="filtro-item">
+        <label>Médico</label>
+        <select class="select" [(ngModel)]="filtroMedico" (ngModelChange)="cargar()">
+          <option [value]="0">Todos</option>
+          @for (m of medicos(); track m.id) { <option [value]="m.id">Dr. {{ m.nombre }} {{ m.apellido }}</option> }
+        </select>
+      </div>
+      <div class="filtro-item">
+        <label>Estado</label>
+        <select class="select" [(ngModel)]="filtroEstado" (ngModelChange)="cargar()">
+          <option value="">Todos</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+      <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+
+    <div class="card">
+      <div class="tabla-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>ID</th><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>Fecha / Hora</th><th>Estado</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>
+            @if (cargando()) {
+              @for (i of [1,2,3,4,5,6]; track i) { <tr><td colspan="7"><div class="skeleton row-skel"></div></td></tr> }
+            } @else {
+              @for (c of citas(); track c.id) {
+                <tr>
+                  <td class="mono">{{ c.id.toString().padStart(3, '0') }}</td>
+                  <td><strong>{{ c.paciente }}</strong></td>
+                  <td class="text-secondary">{{ c.medico }}</td>
+                  <td>{{ c.especialidad }}</td>
+                  <td><span class="mono">{{ c.fecha }}</span> · {{ c.hora }}</td>
+                  <td><app-estado-chip [estado]="c.estado" /></td>
+                  <td>
+                    <div class="acciones">
+                      @if (c.estado === 'Pendiente') {
+                        <button class="btn-icon" title="Marcar atendida" (click)="marcarAtendida(c)">✅</button>
+                        <button class="btn-icon" title="Reprogramar" (click)="abrirReprogramar(c)">✏️</button>
+                        <button class="btn-icon" title="Cancelar" (click)="pedirCancelar(c)">❌</button>
+                      } @else {
+                        <span class="text-secondary sin-acc">—</span>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              } @empty { <tr><td colspan="7" class="vacio">No hay citas con los filtros aplicados.</td></tr> }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- ============ MODO CALENDARIO ============ -->
+  @if (modo() === 'calendario') {
+    <div class="cal-layout">
+      <div class="card cal-card">
+        <div class="cal-head">
+          <button class="btn-icon" (click)="cambiarMes(-1)" aria-label="Mes anterior">‹</button>
+          <h3>{{ nombresMes[mes()] }} {{ anio() }}</h3>
+          <button class="btn-icon" (click)="cambiarMes(1)" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="cal-grid cal-dow">
+          @for (d of diasSemana; track d) { <div class="dow">{{ d }}</div> }
+        </div>
+        <div class="cal-grid">
+          @for (d of diasCalendario(); track d.fecha) {
+            <div class="celda-dia" [class.fuera]="!d.delMes" [class.sel]="diaSel() === d.fecha"
+                 [class.con-citas]="d.citas.length" (click)="seleccionarDia(d)">
+              <span class="num">{{ d.numero }}</span>
+              @if (d.citas.length) {
+                <span class="badge-citas">{{ d.citas.length }}</span>
+                <div class="puntos">
+                  @for (c of d.citas.slice(0, 4); track c.id) { <i class="punto" [class]="claseDia(c)"></i> }
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="cal-leyenda">
+          <span><i class="punto pt"></i> Pendiente</span>
+          <span><i class="punto at"></i> Atendida</span>
+          <span><i class="punto cl"></i> Cancelada</span>
+        </div>
+      </div>
+
+      <!-- Panel lateral del día -->
+      <div class="card dia-panel">
+        @if (diaSel(); as dia) {
+          <div class="card-header"><h3>Citas del {{ dia }}</h3></div>
+          <div class="card-body dia-lista">
+            @for (c of citasDelDia(); track c.id) {
+              <div class="dia-item" [class]="claseDia(c)">
+                <span class="hora mono">{{ c.hora }}</span>
+                <div class="dia-info">
+                  <strong>{{ c.paciente }}</strong>
+                  <span class="text-secondary">{{ c.medico }} · {{ c.especialidad }}</span>
+                </div>
+                <app-estado-chip [estado]="c.estado" />
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dia-vacio">
+            <span class="big">🗓️</span>
+            <p>Selecciona un día con citas para ver el detalle.</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Nueva cita -->
+@if (formAbierto()) {
+  <app-cita-form (guardado)="onGuardado()" (cerrar)="formAbierto.set(false)" />
+}
+
+<!-- Cancelar cita -->
+@if (aCancelar(); as c) {
+  <app-confirm-modal
+    titulo="Cancelar cita"
+    [mensaje]="'¿Cancelar la cita de ' + c.paciente + ' con ' + c.medico + ' el ' + c.fecha + ' a las ' + c.hora + '?'"
+    textoConfirmar="Sí, cancelar" textoCancelar="Volver" [peligro]="true" [procesando]="cancelando()"
+    (confirmar)="confirmarCancelar()" (cancelar)="aCancelar.set(null)" />
+}
+
+<!-- Reprogramar cita -->
+@if (reprogramar(); as c) {
+  <div class="modal-overlay" (click)="reprogramar.set(null)">
+    <div class="modal-card" style="max-width:440px" (click)="$event.stopPropagation()">
+      <div class="m-head">
+        <h3>✏️ Reprogramar cita</h3>
+        <button class="btn-icon" (click)="reprogramar.set(null)" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="m-body">
+        <p class="text-secondary" style="margin-bottom:16px">Paciente: <strong style="color:#1C2B3A">{{ c.paciente }}</strong> · {{ c.medico }}</p>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nueva fecha <span class="req">*</span></label>
+            <input type="date" class="input" [(ngModel)]="repFecha">
+          </div>
+          <div class="field">
+            <label>Nueva hora <span class="req">*</span></label>
+            <input type="time" class="input" [(ngModel)]="repHora">
+          </div>
+        </div>
+      </div>
+      <div class="m-foot">
+        <button class="btn btn-secondary" (click)="reprogramar.set(null)">Cancelar</button>
+        <button class="btn btn-primary" (click)="confirmarReprogramar()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+}

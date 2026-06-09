@@ -1,0 +1,58 @@
+<div class="login-bg">
+  <div class="login-card">
+    <div class="brand">
+      <span class="cruz">✚</span>
+      <div>
+        <h1 class="marca">Meditech</h1>
+        <span class="sub">Salud Digital</span>
+      </div>
+    </div>
+
+    <h2 class="welcome">Bienvenido al sistema administrativo</h2>
+    <p class="hint">Ingresa tus credenciales para continuar</p>
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <div class="field">
+        <label for="correo">Correo electrónico <span class="req">*</span></label>
+        <input id="correo" type="email" class="input" formControlName="correo"
+               placeholder="nombre@meditech.pe" autocomplete="username"
+               [class.invalid]="campoInvalido('correo')">
+        @if (campoInvalido('correo')) {
+          <span class="field-error">Ingresa un correo válido.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña <span class="req">*</span></label>
+        <div class="pass-wrap">
+          <input id="password" class="input" formControlName="password"
+                 [type]="verPassword() ? 'text' : 'password'"
+                 placeholder="••••••••" autocomplete="current-password"
+                 [class.invalid]="campoInvalido('password')">
+          <button type="button" class="ojo" (click)="verPassword.set(!verPassword())"
+                  [attr.aria-label]="verPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ verPassword() ? '🙈' : '👁' }}
+          </button>
+        </div>
+        @if (campoInvalido('password')) {
+          <span class="field-error">La contraseña debe tener al menos 6 caracteres.</span>
+        }
+      </div>
+
+      @if (error()) { <div class="alerta">{{ error() }}</div> }
+
+      <button type="submit" class="btn btn-primary full" [disabled]="cargando()">
+        @if (cargando()) {
+          <span class="spinner"></span> Validando…
+        } @else {
+          Iniciar Sesión
+        }
+      </button>
+    </form>
+
+    <div class="demo-box">
+      <strong>Credenciales de demo</strong>
+      <span>admin&#64;meditech.pe · admin123</span>
+    </div>
+  </div>
+</div>

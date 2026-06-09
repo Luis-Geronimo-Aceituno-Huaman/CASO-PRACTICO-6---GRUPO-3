@@ -1,0 +1,187 @@
+<div class="page">
+  <header class="page-head">
+    <div class="page-title">
+      <h1>👥 Pacientes</h1>
+      <span class="page-subtitle">Gestión de pacientes registrados en la clínica</span>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <span class="search-ico">🔍</span>
+        <input class="search-input" placeholder="Buscar por nombre, DNI o teléfono…"
+               [(ngModel)]="busqueda" (ngModelChange)="onBuscar()">
+      </div>
+      <button class="btn btn-primary" (click)="nuevo()"><span class="icon">＋</span> Nuevo Paciente</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="tabla-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Nombre completo</th><th>DNI</th><th>Teléfono</th>
+            <th>Última cita</th><th>Estado</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            @for (i of [1,2,3,4,5,6,7,8]; track i) {
+              <tr><td colspan="7"><div class="skeleton row-skel"></div></td></tr>
+            }
+          } @else {
+            @for (p of pacientes(); track p.id) {
+              <tr>
+                <td class="mono">{{ p.id.toString().padStart(3, '0') }}</td>
+                <td><strong>{{ p.nombre }} {{ p.apellido }}</strong></td>
+                <td class="mono">{{ p.dni }}</td>
+                <td>{{ p.telefono }}</td>
+                <td class="text-secondary">{{ p.ultimaCita || '—' }}</td>
+                <td><app-estado-chip [estado]="p.estado" /></td>
+                <td>
+                  <div class="acciones">
+                    <button class="btn-icon" title="Ver historial" (click)="verHistorial(p)">👁</button>
+                    <button class="btn-icon" title="Editar" (click)="editar(p)">✏️</button>
+                    <button class="btn-icon" title="Eliminar" (click)="pedirEliminar(p)">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="7" class="vacio">No se encontraron pacientes.</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="paginacion">
+      <span>{{ total() }} paciente(s) · página {{ pagina() }} de {{ totalPaginas }}</span>
+      <div class="pags">
+        <button class="pag" (click)="irPagina(pagina() - 1)" [disabled]="pagina() === 1">‹</button>
+        @for (p of paginas; track p) {
+          <button class="pag" [class.activo]="p === pagina()" (click)="irPagina(p)">{{ p }}</button>
+        }
+        <button class="pag" (click)="irPagina(pagina() + 1)" [disabled]="pagina() === totalPaginas">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nuevo / Editar -->
+@if (formAbierto()) {
+  <app-paciente-form [paciente]="editando()" (guardado)="onGuardado()" (cerrar)="formAbierto.set(false)" />
+}
+
+<!-- Confirmación de eliminación -->
+@if (aEliminar(); as p) {
+  <app-confirm-modal
+    titulo="Eliminar paciente"
+    [mensaje]="'¿Seguro que deseas eliminar a ' + p.nombre + ' ' + p.apellido + '? Esta acción no se puede deshacer.'"
+    textoConfirmar="Eliminar" [peligro]="true" [procesando]="eliminando()"
+    (confirmar)="confirmarEliminar()" (cancelar)="aEliminar.set(null)" />
+}
+
+<!-- Drawer Historial Clínico -->
+@if (drawerPaciente(); as p) {
+  <div class="drawer-overlay" (click)="cerrarDrawer()"></div>
+  <aside class="drawer drawer-hist">
+    <div class="d-head hist-head">
+      <div class="hh-title">
+        <span class="hh-ico">📋</span>
+        <div>
+          <h3>Historia Clínica</h3>
+          <span class="hh-sub">Expediente médico del paciente</span>
+        </div>
+      </div>
+      <button class="btn-icon" (click)="cerrarDrawer()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="d-body hist-body">
+      <!-- Resumen del paciente -->
+      <section class="pac-resumen">
+        <div class="pr-top">
+          <div class="pr-avatar">{{ iniciales(p) }}</div>
+          <div class="pr-id">
+            <h2>{{ p.nombre }} {{ p.apellido }}</h2>
+            <div class="pr-meta">
+              <span class="mono">HC-{{ p.id.toString().padStart(5, '0') }}</span>
+              <span class="dot">·</span>
+              <span>DNI {{ p.dni }}</span>
+              <app-estado-chip [estado]="p.estado" />
+            </div>
+          </div>
+        </div>
+
+        <div class="pr-grid">
+          <div class="pr-dato"><span class="lbl">Edad</span><span class="val">{{ edad(p.fechaNacimiento) }} años</span></div>
+          <div class="pr-dato"><span class="lbl">Tipo de sangre</span><span class="val sangre">🩸 {{ p.tipoSangre || '—' }}</span></div>
+          <div class="pr-dato"><span class="lbl">Teléfono</span><span class="val">{{ p.telefono }}</span></div>
+          <div class="pr-dato"><span class="lbl">Última atención</span><span class="val">{{ p.ultimaCita || '—' }}</span></div>
+        </div>
+
+        <div class="pr-alergias" [class.sin]="!p.alergias || p.alergias === 'Ninguna'">
+          <span class="al-ico">{{ (!p.alergias || p.alergias === 'Ninguna') ? '✅' : '⚠️' }}</span>
+          <div>
+            <span class="al-lbl">Alergias</span>
+            <span class="al-val">{{ p.alergias || 'Sin alergias registradas' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Línea de tiempo -->
+      <section class="hist-timeline-wrap">
+        <div class="tl-head">
+          <h4>Antecedentes y atenciones</h4>
+          @if (!cargandoHistorial()) { <span class="tl-count">{{ historial().length }} registro(s)</span> }
+        </div>
+
+        @if (cargandoHistorial()) {
+          @for (i of [1,2,3]; track i) { <div class="skeleton" style="height:160px;margin-bottom:16px;border-radius:14px"></div> }
+        } @else {
+          <div class="timeline">
+            @for (h of historial(); track h.id) {
+              <article class="tl-item">
+                <span class="tl-punto">{{ iconoTipo(h.tipo) }}</span>
+                <div class="tl-card">
+                  <header class="tl-card-head">
+                    <div class="tl-fecha-bloc">
+                      <span class="tl-fecha">{{ h.fecha }}</span>
+                      <span class="chip chip-info tipo-chip">{{ h.tipo }}</span>
+                    </div>
+                    <div class="tl-medico">
+                      <strong>{{ h.medico }}</strong>
+                      <span class="esp">{{ h.especialidad }}</span>
+                    </div>
+                  </header>
+
+                  <p class="tl-motivo"><span class="mini-lbl">Motivo de consulta</span>{{ h.motivo }}</p>
+
+                  <div class="signos">
+                    <div class="signo"><span class="s-ico">🩺</span><span class="s-val">{{ h.signos.presion }}</span><span class="s-lbl">Presión</span></div>
+                    <div class="signo"><span class="s-ico">❤️</span><span class="s-val">{{ h.signos.frecuencia }}</span><span class="s-lbl">Frec. cardíaca</span></div>
+                    <div class="signo"><span class="s-ico">🌡️</span><span class="s-val">{{ h.signos.temperatura }}</span><span class="s-lbl">Temperatura</span></div>
+                    <div class="signo"><span class="s-ico">⚖️</span><span class="s-val">{{ h.signos.peso }}</span><span class="s-lbl">Peso</span></div>
+                  </div>
+
+                  <div class="tl-seccion dx">
+                    <span class="sec-lbl">🔎 Diagnóstico</span>
+                    <p>{{ h.diagnostico }}</p>
+                  </div>
+                  <div class="tl-seccion">
+                    <span class="sec-lbl">📑 Resultados / Observaciones</span>
+                    <p>{{ h.resultados }}</p>
+                  </div>
+                  <div class="tl-seccion rx">
+                    <span class="sec-lbl">💊 Indicaciones y recetas</span>
+                    <p>{{ h.recetas }}</p>
+                  </div>
+                </div>
+              </article>
+            } @empty {
+              <div class="vacio-hist">📋 Este paciente aún no tiene entradas en su historial.</div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </aside>
+}

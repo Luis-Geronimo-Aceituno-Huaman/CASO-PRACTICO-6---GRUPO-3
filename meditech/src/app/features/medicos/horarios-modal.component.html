@@ -1,0 +1,55 @@
+<div class="modal-overlay" (click)="cerrar.emit()">
+  <div class="modal-card ancho" (click)="$event.stopPropagation()">
+    <div class="m-head">
+      <h3>📅 Horarios de Dr. {{ medico.nombre }} {{ medico.apellido }}</h3>
+      <button class="btn-icon" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="m-body">
+      <p class="ayuda">Haz clic en una celda para marcarla como <strong>disponible</strong> u <strong>ocupada</strong>.</p>
+
+      @if (cargando()) {
+        <div class="skeleton" style="height:320px;border-radius:12px"></div>
+      } @else if (horario(); as h) {
+        <div class="grid-scroll">
+          <table class="grilla">
+            <thead>
+              <tr>
+                <th class="fr-col">Hora</th>
+                @for (d of h.dias; track d) { <th>{{ d }}</th> }
+              </tr>
+            </thead>
+            <tbody>
+              @for (franja of h.franjas; track franja; let fi = $index) {
+                <tr>
+                  <td class="fr-col mono">{{ franja }}</td>
+                  @for (d of h.dias; track d; let di = $index) {
+                    <td>
+                      <button class="celda" [class.disp]="h.disponibilidad[di][fi]"
+                              (click)="toggle(di, fi)"
+                              [attr.aria-label]="d + ' ' + franja + (h.disponibilidad[di][fi] ? ' disponible' : ' ocupado')">
+                        {{ h.disponibilidad[di][fi] ? '✓' : '' }}
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="leyenda">
+          <span><i class="box disp"></i> Disponible</span>
+          <span><i class="box"></i> Ocupado</span>
+        </div>
+      }
+    </div>
+
+    <div class="m-foot">
+      <button class="btn btn-secondary" (click)="cerrar.emit()">Cerrar</button>
+      <button class="btn btn-primary" (click)="guardar()" [disabled]="guardando() || cargando()">
+        @if (guardando()) { <span class="spinner"></span> Guardando… }
+        @else { Guardar disponibilidad }
+      </button>
+    </div>
+  </div>
+</div>
