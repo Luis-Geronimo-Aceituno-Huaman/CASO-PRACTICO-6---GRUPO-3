@@ -9,20 +9,24 @@
     </button>
   </header>
 
-  <!-- Fila 1: KPIs -->
+  <!-- Fila 1: KPIs (clic para ver el detalle) -->
   <section class="kpis">
     <app-kpi-card titulo="Citas hoy" [valor]="48" icono="📅"
                   tendencia="+8% vs ayer" [tendenciaPositiva]="true"
-                  color="#1A6FBB" [cargando]="cargando()" />
+                  color="#1A6FBB" [cargando]="cargando()"
+                  [clickable]="true" (abrir)="abrirDetalle('citas')" />
     <app-kpi-card titulo="Pacientes atendidos" [valor]="'1,284'" icono="👥"
                   tendencia="+12% vs ayer" [tendenciaPositiva]="true"
-                  color="#27AE60" [cargando]="cargando()" />
+                  color="#27AE60" [cargando]="cargando()"
+                  [clickable]="true" (abrir)="abrirDetalle('atendidos')" />
     <app-kpi-card titulo="Médicos disponibles" [valor]="12" icono="🩺"
                   subtitulo="de 14 activos"
-                  color="#F39C12" [cargando]="cargando()" />
+                  color="#F39C12" [cargando]="cargando()"
+                  [clickable]="true" (abrir)="abrirDetalle('medicos')" />
     <app-kpi-card titulo="Especialidad más pedida" valor="Cardiología" icono="🏥"
                   subtitulo="38% de las citas"
-                  color="#9B59B6" [cargando]="cargando()" />
+                  color="#9B59B6" [cargando]="cargando()"
+                  [clickable]="true" (abrir)="abrirDetalle('especialidades')" />
   </section>
 
   <!-- Fila 2: Gráficos -->
@@ -105,3 +109,75 @@
     </div>
   </section>
 </div>
+
+<!-- Modal de detalle al hacer clic en un KPI -->
+@if (detalle(); as tipo) {
+  <div class="modal-overlay" (click)="cerrarDetalle()">
+    <div class="modal-card ancho" (click)="$event.stopPropagation()">
+      <div class="m-head">
+        <h3>{{ titulosDetalle[tipo] }}</h3>
+        <button class="btn-icon" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="m-body det-body">
+        @if (cargandoDetalle()) {
+          @for (i of [1,2,3,4,5]; track i) { <div class="skeleton" style="height:40px;margin-bottom:8px;border-radius:8px"></div> }
+        } @else {
+
+          @if (tipo === 'citas' || tipo === 'atendidos') {
+            <table class="data-table">
+              <thead>
+                <tr><th>Paciente</th><th>Médico</th><th>Especialidad</th><th>{{ tipo === 'citas' ? 'Hora' : 'Fecha' }}</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                @for (c of detCitas(); track c.id) {
+                  <tr>
+                    <td><strong>{{ c.paciente }}</strong></td>
+                    <td class="text-secondary">{{ c.medico }}</td>
+                    <td>{{ c.especialidad }}</td>
+                    <td class="mono">{{ tipo === 'citas' ? c.hora : c.fecha }}</td>
+                    <td><app-estado-chip [estado]="c.estado" /></td>
+                  </tr>
+                } @empty { <tr><td colspan="5" class="vacio">Sin registros.</td></tr> }
+              </tbody>
+            </table>
+            <p class="det-total">Total: <strong>{{ detCitas().length }}</strong> registro(s)</p>
+          }
+
+          @if (tipo === 'medicos') {
+            <table class="data-table">
+              <thead><tr><th>Médico</th><th>Especialidad</th><th>Turno</th><th>Estado</th></tr></thead>
+              <tbody>
+                @for (m of detMedicos(); track m.id) {
+                  <tr>
+                    <td><strong>Dr. {{ m.nombre }} {{ m.apellido }}</strong></td>
+                    <td>{{ m.especialidad }}</td>
+                    <td>{{ m.turno }}</td>
+                    <td><app-estado-chip [estado]="m.estado" /></td>
+                  </tr>
+                } @empty { <tr><td colspan="4" class="vacio">Sin registros.</td></tr> }
+              </tbody>
+            </table>
+            <p class="det-total">Total: <strong>{{ detMedicos().length }}</strong> médico(s) disponible(s)</p>
+          }
+
+          @if (tipo === 'especialidades') {
+            <table class="data-table">
+              <thead><tr><th>Especialidad</th><th>Citas</th><th>Demanda</th></tr></thead>
+              <tbody>
+                @for (e of detEspecialidades(); track e.especialidad) {
+                  <tr>
+                    <td><strong>{{ e.especialidad }}</strong></td>
+                    <td>{{ e.total }}</td>
+                    <td>
+                      <div class="dem-barra"><div class="dem-rel" [style.width.%]="(e.total / detEspecialidades()[0].total) * 100"></div></div>
+                    </td>
+                  </tr>
+                } @empty { <tr><td colspan="3" class="vacio">Sin registros.</td></tr> }
+              </tbody>
+            </table>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}

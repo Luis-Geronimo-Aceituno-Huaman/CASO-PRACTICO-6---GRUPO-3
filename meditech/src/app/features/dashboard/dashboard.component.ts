@@ -7,8 +7,11 @@ import { EstadoChipComponent } from '../../shared/components/estado-chip.compone
 import { CitasService } from '../../core/services/citas.service';
 import { PacientesService } from '../../core/services/pacientes.service';
 import { ReportesService } from '../../core/services/reportes.service';
+import { MedicosService } from '../../core/services/medicos.service';
 import { ToastService } from '../../core/services/toast.service';
-import { Cita, Paciente } from '../../shared/models';
+import { Cita, Paciente, Medico, DistribucionEspecialidad } from '../../shared/models';
+
+type DetalleKpi = 'citas' | 'atendidos' | 'medicos' | 'especialidades';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +24,48 @@ export class DashboardComponent implements OnInit {
   private citasSrv = inject(CitasService);
   private pacientesSrv = inject(PacientesService);
   private reportesSrv = inject(ReportesService);
+  private medicosSrv = inject(MedicosService);
   private toast = inject(ToastService);
+
+  // ---- Detalle al hacer clic en un KPI ----
+  readonly detalle = signal<DetalleKpi | null>(null);
+  readonly cargandoDetalle = signal(false);
+  readonly detCitas = signal<Cita[]>([]);
+  readonly detMedicos = signal<Medico[]>([]);
+  readonly detEspecialidades = signal<DistribucionEspecialidad[]>([]);
+
+  readonly titulosDetalle: Record<DetalleKpi, string> = {
+    citas: '📅 Citas de hoy',
+    atendidos: '👥 Pacientes atendidos',
+    medicos: '🩺 Médicos disponibles',
+    especialidades: '🏥 Especialidades más solicitadas',
+  };
+
+  abrirDetalle(tipo: DetalleKpi): void {
+    this.detalle.set(tipo);
+    this.cargandoDetalle.set(true);
+
+    if (tipo === 'citas') {
+      this.citasSrv.listar({ fecha: this.hoy }).subscribe(c => {
+        this.detCitas.set(c); this.cargandoDetalle.set(false);
+      });
+    } else if (tipo === 'atendidos') {
+      this.citasSrv.listar({ estado: 'Atendida' }).subscribe(c => {
+        this.detCitas.set(c); this.cargandoDetalle.set(false);
+      });
+    } else if (tipo === 'medicos') {
+      this.medicosSrv.listar(undefined, '', 1, 100).subscribe(r => {
+        this.detMedicos.set(r.items.filter(m => m.estado === 'Activo'));
+        this.cargandoDetalle.set(false);
+      });
+    } else {
+      this.reportesSrv.distribucionEspecialidades().subscribe(d => {
+        this.detEspecialidades.set(d); this.cargandoDetalle.set(false);
+      });
+    }
+  }
+
+  cerrarDetalle(): void { this.detalle.set(null); }
 
   readonly cargando = signal(true);
   readonly hoy = '2026-06-09';

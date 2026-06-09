@@ -1,17 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 /**
  * <app-kpi-card> — Tarjeta KPI reutilizable (dashboard y reportes).
  * Recibe título, valor, ícono, tendencia y color por @Input().
+ * Si es `clickable`, emite `abrir` al hacer clic para ver el detalle.
  */
 @Component({
   selector: 'app-kpi-card',
   standalone: true,
   template: `
-    <div class="kpi" [style.borderLeftColor]="color" [class.loading]="cargando">
+    <div class="kpi" [style.borderLeftColor]="color" [class.loading]="cargando"
+         [class.clickable]="clickable" (click)="clickable && !cargando && abrir.emit()">
       <div class="kpi-head">
         <span class="kpi-icon" [style.background]="colorSuave" [style.color]="color">{{ icono }}</span>
         <span class="kpi-label">{{ titulo }}</span>
+        @if (clickable) { <span class="kpi-ver">Ver →</span> }
       </div>
 
       @if (cargando) {
@@ -40,6 +43,13 @@ import { Component, Input } from '@angular/core';
       animation: fadeUp 400ms ease both;
     }
     .kpi:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .kpi.clickable { cursor: pointer; }
+    .kpi.clickable:hover { transform: translateY(-2px); }
+    .kpi.clickable:hover .kpi-ver { opacity: 1; }
+    .kpi-ver {
+      margin-left: auto; font-size: 12px; font-weight: 600;
+      color: #1A6FBB; opacity: 0; transition: opacity 150ms ease; white-space: nowrap;
+    }
     .kpi-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
     .kpi-icon {
       width: 38px; height: 38px; border-radius: 10px;
@@ -64,6 +74,8 @@ export class KpiCardComponent {
   @Input() subtitulo = '';
   @Input() color = '#1A6FBB';
   @Input() cargando = false;
+  @Input() clickable = false;
+  @Output() abrir = new EventEmitter<void>();
 
   get colorSuave(): string {
     return this.hexToRgba(this.color, 0.1);

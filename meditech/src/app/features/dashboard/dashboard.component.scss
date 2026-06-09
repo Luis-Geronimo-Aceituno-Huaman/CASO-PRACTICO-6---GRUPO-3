@@ -54,6 +54,21 @@
   .row-skel { height: 14px; }
 }
 
+// ---- Modal de detalle de KPI ----
+.det-body { padding: 0; }
+.det-body .data-table thead th { position: sticky; top: 0; z-index: 1; }
+.det-body { max-height: 60vh; }
+.det-total {
+  padding: 14px 20px; font-size: 13px; color: $text-secondary;
+  border-top: 1px solid $border-color;
+  strong { color: $text-main; }
+}
+.dem-barra {
+  width: 140px; height: 8px; background: $bg-general;
+  border-radius: 4px; overflow: hidden;
+}
+.dem-rel { height: 100%; background: $color-primary; border-radius: 4px; }
+
 @media (max-width: 1024px) {
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .graficos, .tablas { grid-template-columns: 1fr; }
