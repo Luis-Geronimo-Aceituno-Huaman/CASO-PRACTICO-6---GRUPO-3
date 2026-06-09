@@ -48,8 +48,23 @@ export class MedicosService {
     return of(void 0).pipe(delay(LATENCIA));
   }
 
+  private especialidadesData: Especialidad[] = ESPECIALIDADES.map(e => ({ ...e }));
+  private seqEsp = ESPECIALIDADES.length;
+
   especialidades(): Observable<Especialidad[]> {
-    return of(ESPECIALIDADES.map(e => ({ ...e }))).pipe(delay(300));
+    return of(this.especialidadesData.map(e => ({ ...e }))).pipe(delay(300));
+  }
+
+  crearEspecialidad(nombre: string): Observable<Especialidad> {
+    const nueva: Especialidad = { id: ++this.seqEsp, nombre, numMedicos: 0 };
+    this.especialidadesData.push(nueva);
+    return of(nueva).pipe(delay(LATENCIA));
+  }
+
+  actualizarEspecialidad(id: number, nombre: string): Observable<Especialidad> {
+    const i = this.especialidadesData.findIndex(e => e.id === id);
+    this.especialidadesData[i] = { ...this.especialidadesData[i], nombre };
+    return of(this.especialidadesData[i]).pipe(delay(LATENCIA));
   }
 
   horarios(idMedico: number): Observable<Horario> {

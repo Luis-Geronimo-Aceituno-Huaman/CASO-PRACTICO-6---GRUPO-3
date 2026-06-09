@@ -3,7 +3,11 @@
 .filtro { width: 220px; }
 .cmp { font-size: 11px; color: $text-secondary; }
 
-.esp-section h2 { margin-bottom: 16px; }
+.esp-section h2 { margin-bottom: 0; }
+.esp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
+}
 .esp-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

@@ -78,4 +78,29 @@ export class MedicosListComponent implements OnInit {
   }
 
   verHorarios(m: Medico): void { this.horariosDe.set(m); }
+
+  // ---- Especialidades ----
+  readonly espModal = signal(false);
+  readonly espEditando = signal<Especialidad | null>(null);
+  readonly espGuardando = signal(false);
+  nombreEsp = '';
+
+  nuevaEspecialidad(): void { this.espEditando.set(null); this.nombreEsp = ''; this.espModal.set(true); }
+  editarEspecialidad(e: Especialidad): void { this.espEditando.set(e); this.nombreEsp = e.nombre; this.espModal.set(true); }
+
+  guardarEspecialidad(): void {
+    const nombre = this.nombreEsp.trim();
+    if (!nombre) return;
+    this.espGuardando.set(true);
+    const editando = this.espEditando();
+    const obs = editando
+      ? this.srv.actualizarEspecialidad(editando.id, nombre)
+      : this.srv.crearEspecialidad(nombre);
+    obs.subscribe(() => {
+      this.espGuardando.set(false);
+      this.espModal.set(false);
+      this.toast.success(editando ? 'Especialidad actualizada.' : 'Especialidad registrada correctamente.');
+      this.srv.especialidades().subscribe(e => this.especialidades.set(e));
+    });
+  }
 }

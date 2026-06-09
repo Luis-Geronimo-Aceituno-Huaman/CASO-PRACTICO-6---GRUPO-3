@@ -57,7 +57,10 @@
 
   <!-- Sección secundaria: Especialidades registradas -->
   <section class="esp-section">
-    <h2>Especialidades registradas</h2>
+    <div class="esp-head">
+      <h2>Especialidades registradas</h2>
+      <button class="btn btn-primary btn-sm" (click)="nuevaEspecialidad()"><span class="icon">＋</span> Nueva especialidad</button>
+    </div>
     <div class="esp-grid">
       @for (e of especialidades(); track e.id) {
         <div class="esp-card">
@@ -66,8 +69,7 @@
             <span class="esp-nombre">{{ e.nombre }}</span>
             <span class="esp-num">{{ e.numMedicos }} médico(s)</span>
           </div>
-          <button class="btn-icon" title="Editar especialidad"
-                  (click)="toast.info('Edición de especialidad (demo).')">✏️</button>
+          <button class="btn-icon" title="Editar especialidad" (click)="editarEspecialidad(e)">✏️</button>
         </div>
       }
     </div>
@@ -89,4 +91,30 @@
 
 @if (horariosDe(); as m) {
   <app-horarios-modal [medico]="m" (cerrar)="horariosDe.set(null)" />
+}
+
+<!-- Registrar / Editar especialidad -->
+@if (espModal()) {
+  <div class="modal-overlay" (click)="espModal.set(false)">
+    <div class="modal-card" style="max-width:440px" (click)="$event.stopPropagation()">
+      <div class="m-head">
+        <h3>{{ espEditando() ? '✏️ Editar especialidad' : '🏥 Nueva especialidad' }}</h3>
+        <button class="btn-icon" (click)="espModal.set(false)" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="m-body">
+        <div class="field">
+          <label>Nombre de la especialidad <span class="req">*</span></label>
+          <input class="input" [(ngModel)]="nombreEsp" placeholder="Ej: Oftalmología"
+                 (keyup.enter)="guardarEspecialidad()" autofocus>
+        </div>
+      </div>
+      <div class="m-foot">
+        <button class="btn btn-secondary" (click)="espModal.set(false)">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarEspecialidad()" [disabled]="espGuardando() || !nombreEsp.trim()">
+          @if (espGuardando()) { <span class="spinner"></span> Guardando… }
+          @else { {{ espEditando() ? 'Guardar cambios' : 'Registrar' }} }
+        </button>
+      </div>
+    </div>
+  </div>
 }
